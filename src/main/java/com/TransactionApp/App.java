@@ -9,6 +9,11 @@ public class App {
         JsonParser jsonParser = new JsonParser();
         TestCaseData testCase = jsonParser.parseTestCase("src/main/resources/examples/test_case_1");
 
+
+
+
+
+
         assertCondition(testCase != null, "Parsed test case is null");
         assertCondition(testCase.streams != null, "Streams section is null");
         assertCondition(testCase.routes != null, "Routes section is null");
