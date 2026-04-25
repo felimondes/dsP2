@@ -21,6 +21,5 @@ public class App {
         for (Map.Entry<Integer, Double> entry : wcrt.entrySet()) {
             System.out.println("Stream ID: " + entry.getKey() + ", WCRT: " + entry.getValue());
         }
-
     }
 }
