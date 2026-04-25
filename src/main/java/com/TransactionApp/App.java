@@ -1,33 +1,26 @@
 package com.TransactionApp;
 
+import com.TransactionApp.analyticalTool.WCRTTool;
 import com.TransactionApp.parser.JsonParser;
 import com.TransactionApp.parser.TestCaseData;
 
+import java.util.Map;
+
 public class App {
+
+
+
     public static void main(String[] args) throws Exception {
 
         JsonParser jsonParser = new JsonParser();
-        TestCaseData testCase = jsonParser.parseTestCase("src/main/resources/examples/test_case_1");
+        TestCaseData testCaseData = jsonParser.parseTestCase("src/main/resources/examples/test_case_2");
+        WCRTTool wcdTool = new WCRTTool(testCaseData);
+        Map<Integer, Double> wcrt = wcdTool.calculateWCRT();
 
-        assertCondition(testCase != null, "Parsed test case is null");
-        assertCondition(testCase.streams != null, "Streams section is null");
-        assertCondition(testCase.routes != null, "Routes section is null");
-        assertCondition(testCase.topology != null, "Topology section is null");
-
-        assertCondition(testCase.streams.streams.size() == 10, "Expected 10 streams");
-        assertCondition(testCase.routes.routes.size() == 10, "Expected 10 routes");
-        assertCondition(testCase.topology.topology.switches.size() == 2, "Expected 2 switches");
-        assertCondition(testCase.topology.topology.links.size() == 6, "Expected 6 links");
-
-        System.out.println("Main smoke test PASSED: "
-                + testCase.streams.streams.get(0).name
-                + ", routes=" + testCase.routes.routes.size()
-                + ", links=" + testCase.topology.topology.links.size());
-    }
-
-    private static void assertCondition(boolean condition, String message) {
-        if (!condition) {
-            throw new IllegalStateException("Main smoke test FAILED: " + message);
+        //print values
+        for (Map.Entry<Integer, Double> entry : wcrt.entrySet()) {
+            System.out.println("Stream ID: " + entry.getKey() + ", WCRT: " + entry.getValue());
         }
+
     }
 }

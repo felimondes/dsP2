@@ -14,19 +14,19 @@ public class JsonParserTest extends TestCase {
         TestCaseData data = parser.parseTestCase(testCaseDir);
 
         assertNotNull(data);
-        assertNotNull(data.streams);
-        assertNotNull(data.routes);
-        assertNotNull(data.topology);
+        assertNotNull(data.streamsFile);
+        assertNotNull(data.routesFile);
+        assertNotNull(data.topologyWrapper);
 
-        assertEquals("MICRO_SECOND", data.streams.delay_units);
-        assertEquals(10, data.streams.streams.size());
-        assertEquals("Stream0", data.streams.streams.get(0).name);
+        assertEquals("MICRO_SECOND", data.streamsFile.delay_units);
+        assertEquals(10, data.streamsFile.streams.size());
+        assertEquals("Stream0", data.streamsFile.streams.get(0).name);
 
-        assertEquals(10, data.routes.routes.size());
-        assertEquals(0, data.routes.routes.get(0).flow_id);
+        assertEquals(10, data.routesFile.routes.size());
+        assertEquals(0, data.routesFile.routes.get(0).flow_id);
 
-        assertEquals(2, data.topology.topology.switches.size());
-        assertEquals(6, data.topology.topology.links.size());
+        assertEquals(2, data.topologyWrapper.topology.switches.size());
+        assertEquals(6, data.topologyWrapper.topology.links.size());
     }
 
     public void testParseTestCaseHandlesTrailingPathSeparator() throws Exception {
@@ -36,9 +36,9 @@ public class JsonParserTest extends TestCase {
         TestCaseData withoutSeparator = parser.parseTestCase(basePath);
         TestCaseData withSeparator = parser.parseTestCase(basePath + File.separator);
 
-        assertEquals(withoutSeparator.streams.streams.size(), withSeparator.streams.streams.size());
-        assertEquals(withoutSeparator.routes.routes.size(), withSeparator.routes.routes.size());
-        assertEquals(withoutSeparator.topology.topology.links.size(), withSeparator.topology.topology.links.size());
+        assertEquals(withoutSeparator.streamsFile.streams.size(), withSeparator.streamsFile.streams.size());
+        assertEquals(withoutSeparator.routesFile.routes.size(), withSeparator.routesFile.routes.size());
+        assertEquals(withoutSeparator.topologyWrapper.topology.links.size(), withSeparator.topologyWrapper.topology.links.size());
     }
 
     public void testParseTestCaseThrowsForMissingDirectory() {
