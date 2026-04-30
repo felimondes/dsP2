@@ -13,7 +13,7 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         JsonParser jsonParser = new JsonParser();
-        TestCaseData testCaseData = jsonParser.parseTestCase("src/main/resources/examples/test_case_2");
+        TestCaseData testCaseData = jsonParser.parseTestCase("src/main/resources/examples/test_case_1");
         WCRTTool wcdTool = new WCRTTool(testCaseData);
         Map<Integer, Double> wcrt = wcdTool.calculateWCRT();
 
