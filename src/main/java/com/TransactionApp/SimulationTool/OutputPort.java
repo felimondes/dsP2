@@ -61,6 +61,7 @@ public class OutputPort {
         updateClassBCredit(elapsed);
 
         resetPositiveCreditIfQueueIdle();
+        clampTinyCreditsToZero();
 
         lastCreditUpdateTime = currentTime;
     }
@@ -163,11 +164,13 @@ public class OutputPort {
     }
 
     private Frame dequeueCBS() {
-        if (!classAQueue.isEmpty() && creditA >= 0) {
+        if (!classAQueue.isEmpty() && creditA >= -EPSILON) {
+            creditA = Math.max(creditA, 0.0);
             return classAQueue.poll();
         }
 
-        if (!classBQueue.isEmpty() && creditB >= 0) {
+        if (!classBQueue.isEmpty() && creditB >= -EPSILON) {
+            creditB = Math.max(creditB, 0.0);
             return classBQueue.poll();
         }
 
@@ -184,12 +187,12 @@ public class OutputPort {
     ) {
         Double nextRecoveryTime = null;
 
-        if (!classAQueue.isEmpty() && creditA < 0) {
+        if (!classAQueue.isEmpty() && creditA < -EPSILON) {
             double recoveryTime = currentTime + (-creditA / idleSlopeA);
             nextRecoveryTime = recoveryTime;
         }
 
-        if (!classBQueue.isEmpty() && creditB < 0) {
+        if (!classBQueue.isEmpty() && creditB < -EPSILON) {
             double recoveryTime = currentTime + (-creditB / idleSlopeB);
 
             if (nextRecoveryTime == null || recoveryTime < nextRecoveryTime) {
@@ -201,8 +204,13 @@ public class OutputPort {
             return;
         }
 
+        // Important: never schedule a recovery event at the same time.
+        if (nextRecoveryTime <= currentTime + EPSILON) {
+            return;
+        }
+
         if (pendingCreditRecoveryTime != null
-                && pendingCreditRecoveryTime <= nextRecoveryTime) {
+                && pendingCreditRecoveryTime <= nextRecoveryTime + EPSILON) {
             return;
         }
 
@@ -213,7 +221,8 @@ public class OutputPort {
                 EventType.CREDIT_RECOVERY,
                 this
         ));
-        if(debugPrints){
+
+        if (debugPrints) {
             System.out.println(
                     "At time " + currentTime +
                             ": scheduled credit recovery on " + link.id +
@@ -221,7 +230,6 @@ public class OutputPort {
                             ". Credits: " + creditSummary()
             );
         }
-
     }
 
     private double computeTransmissionTimeMicroseconds(Frame frame) {
@@ -262,6 +270,15 @@ public class OutputPort {
         return true;
     }
 
+    private void clampTinyCreditsToZero() {
+        if (Math.abs(creditA) < EPSILON) {
+            creditA = 0.0;
+        }
+
+        if (Math.abs(creditB) < EPSILON) {
+            creditB = 0.0;
+        }
+    }
 
 
 }

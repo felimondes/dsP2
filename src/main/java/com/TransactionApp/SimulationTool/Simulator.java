@@ -33,7 +33,7 @@ public class Simulator {
 
         long hyperPeriod = computeHyperPeriod(streams);
 
-        int simulationHyperperiods = 10;
+        int simulationHyperperiods = 100;
         double releaseHorizon = simulationHyperperiods * (double) hyperPeriod;
 
         RouteResolver routeResolver = new RouteResolver(topology);
@@ -67,8 +67,32 @@ public class Simulator {
         System.out.println("Initial events: " + eventQueue.size());
         System.out.println();
 
+        long processedEvents = 0;
+        long maxEvents = 10_000_000;
+        double lastEventTime = -1.0;
+        long sameTimeEvents = 0;
+
         while (!eventQueue.isEmpty()) {
             SimulationEvent event = eventQueue.poll();
+
+            processedEvents++;
+
+            if (Math.abs(event.time - lastEventTime) < 1e-9) {
+                sameTimeEvents++;
+            } else {
+                sameTimeEvents = 0;
+                lastEventTime = event.time;
+            }
+
+            if (processedEvents > maxEvents || sameTimeEvents > 100_000) {
+                throw new IllegalStateException(
+                        "Simulation appears stuck. " +
+                                "processedEvents=" + processedEvents +
+                                ", eventTime=" + event.time +
+                                ", sameTimeEvents=" + sameTimeEvents +
+                                ", remainingEvents=" + eventQueue.size()
+                );
+            }
 
             networkState.updateAllCredits(event.time);
 
