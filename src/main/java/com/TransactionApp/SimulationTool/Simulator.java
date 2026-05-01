@@ -33,7 +33,7 @@ public class Simulator {
 
         long hyperPeriod = computeHyperPeriod(streams);
 
-        int simulationHyperperiods = 100;
+        int simulationHyperperiods = 10000;
         long releaseHorizon = simulationHyperperiods * hyperPeriod;
 
         RouteResolver routeResolver = new RouteResolver(topology);
