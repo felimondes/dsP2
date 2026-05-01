@@ -45,13 +45,15 @@ public class WCRTTool {
 
     public Map<Integer, Double> calculateWCRT() throws Exception {
 
-        Map <Integer, Double> result = new HashMap<>();
-        for (int i = 0; i < streamById.size(); i++) {
-            boolean isOddStream = (i % 2) == 1;
-            if (isOddStream) continue;
-            Stream stream = streamById.get(i);
-            Route route = routeByFlowId.get(i);
 
+
+        Map <Integer, Double> result = new HashMap<>();
+
+
+        for (Map.Entry<Integer, Stream> entry : streamById.entrySet()) {
+            Integer key = entry.getKey();
+            Stream stream = entry.getValue();
+            Route route = routeByFlowId.get(key);
             boolean isBE = stream.PCP == 0; //BE is priority 0
             if (isBE) {
                 result.put(stream.id, Double.POSITIVE_INFINITY); // BE streams have infinite WCRT
