@@ -1,0 +1,25 @@
+{
+  "delay_units": "MICRO_SECOND",
+  "routes": [
+    {
+      "flow_id": 0,
+      "paths": [
+        [
+          {
+            "node": "ES0",
+            "port": 0
+          },
+          {
+            "node": "SW1",
+            "port": 1
+          },
+          {
+            "node": "ES1",
+            "port": 0
+          }
+        ]
+      ],
+      "min_e2e_delay": 0
+    }
+  ]
+}

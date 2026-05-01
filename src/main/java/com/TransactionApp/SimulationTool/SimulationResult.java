@@ -3,7 +3,7 @@ package com.TransactionApp.SimulationTool;
 public class SimulationResult {
 
     public final int streamId;
-    public long maxResponseTime = 0;
+    public double maxResponseTime = 0.0;
     public int deliveredFrames = 0;
 
     public SimulationResult(int streamId) {
@@ -11,7 +11,7 @@ public class SimulationResult {
     }
 
     public void record(Frame frame) {
-        long responseTime = frame.finishTime - frame.releaseTime;
+        double responseTime = frame.finishTime - frame.releaseTime;
 
         if (responseTime > maxResponseTime) {
             maxResponseTime = responseTime;
@@ -23,7 +23,8 @@ public class SimulationResult {
     @Override
     public String toString() {
         return "Stream " + streamId +
-                ": max observed response time = " + maxResponseTime +
+                ": max observed response time = " +
+                String.format("%.3f", maxResponseTime) +
                 " us, delivered frames = " + deliveredFrames;
     }
 }

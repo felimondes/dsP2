@@ -20,7 +20,7 @@ public class FrameReleaseGenerator {
         this.routeResolver = routeResolver;
     }
 
-    public List<Frame> generateFrames(long simulationDuration) {
+    public List<Frame> generateFrames(double simulationDuration) {
         List<Frame> frames = new ArrayList<>();
 
         Map<Integer, Route> routeByStreamId = buildRouteMap();
@@ -41,7 +41,7 @@ public class FrameReleaseGenerator {
 
             int instanceId = 0;
 
-            for (long releaseTime = 0;
+            for (double releaseTime = 0.0;
                  releaseTime < simulationDuration;
                  releaseTime += stream.period) {
 
@@ -50,7 +50,7 @@ public class FrameReleaseGenerator {
             }
         }
 
-        frames.sort(Comparator.comparingLong(frame -> frame.releaseTime));
+        frames.sort(Comparator.comparingDouble(frame -> frame.releaseTime));
 
         return frames;
     }

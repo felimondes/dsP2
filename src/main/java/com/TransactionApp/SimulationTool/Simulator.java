@@ -24,7 +24,7 @@ public class Simulator {
         JsonParser parser = new JsonParser();
 
         TestCaseData testCase = parser.parseTestCase(
-                "src/main/resources/examples/test_case_1"
+                "src/main/resources/examples/test_case_2"
         );
 
         final StreamsFile streams = testCase.streamsFile;
@@ -33,8 +33,8 @@ public class Simulator {
 
         long hyperPeriod = computeHyperPeriod(streams);
 
-        int simulationHyperperiods = 10000;
-        long releaseHorizon = simulationHyperperiods * hyperPeriod;
+        int simulationHyperperiods = 10;
+        double releaseHorizon = simulationHyperperiods * (double) hyperPeriod;
 
         RouteResolver routeResolver = new RouteResolver(topology);
 
