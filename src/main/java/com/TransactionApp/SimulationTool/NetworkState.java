@@ -39,7 +39,7 @@ public class NetworkState {
         return outputPortsByLinkId.values();
     }
 
-    public void updateAllCredits(long currentTime) {
+    public void updateAllCredits(double currentTime) {
         for (OutputPort outputPort : outputPortsByLinkId.values()) {
             outputPort.updateCredits(currentTime);
         }

@@ -13,6 +13,8 @@ public class OutputPort {
 
     private final int defaultBandwidthMbps;
 
+    private static final double EPSILON = 1e-9;
+
     private final Queue<Frame> classAQueue = new ArrayDeque<>();
     private final Queue<Frame> classBQueue = new ArrayDeque<>();
     private final Queue<Frame> bestEffortQueue = new ArrayDeque<>();
@@ -23,7 +25,7 @@ public class OutputPort {
     private double creditA = 0.0;
     private double creditB = 0.0;
 
-    private Long pendingCreditRecoveryTime = null;
+    private Double pendingCreditRecoveryTime = null;
 
     private final double idleSlopeA = 0.5;
     private final double sendSlopeA = -0.5;
@@ -31,7 +33,7 @@ public class OutputPort {
     private final double idleSlopeB = 0.5;
     private final double sendSlopeB = -0.5;
 
-    private long lastCreditUpdateTime = 0;
+    private double lastCreditUpdateTime = 0.0;
 
     public OutputPort(Link link, int defaultBandwidthMbps) {
         this.link = link;
@@ -48,8 +50,8 @@ public class OutputPort {
         }
     }
 
-    public void updateCredits(long currentTime) {
-        long elapsed = currentTime - lastCreditUpdateTime;
+    public void updateCredits(double currentTime) {
+        double elapsed = currentTime - lastCreditUpdateTime;
 
         if (elapsed <= 0) {
             return;
@@ -63,7 +65,7 @@ public class OutputPort {
         lastCreditUpdateTime = currentTime;
     }
 
-    private void updateClassACredit(long elapsed) {
+    private void updateClassACredit(double elapsed) {
         if (currentlyTransmittingClass == TrafficClass.CLASS_A) {
             creditA += sendSlopeA * elapsed;
             return;
@@ -79,7 +81,7 @@ public class OutputPort {
         }
     }
 
-    private void updateClassBCredit(long elapsed) {
+    private void updateClassBCredit(double elapsed) {
         if (currentlyTransmittingClass == TrafficClass.CLASS_B) {
             creditB += sendSlopeB * elapsed;
             return;
@@ -118,7 +120,7 @@ public class OutputPort {
         currentlyTransmittingClass = null;
     }
 
-    public void tryStartTransmission(long currentTime, EventQueue eventQueue) {
+    public void tryStartTransmission(double currentTime, EventQueue eventQueue) {
         updateCredits(currentTime);
 
         if (isBusy()) {
@@ -137,8 +139,8 @@ public class OutputPort {
 
         pendingCreditRecoveryTime = null;
 
-        long transmissionTime = computeTransmissionTimeMicroseconds(nextFrame);
-        long endTime = currentTime + transmissionTime;
+        double transmissionTime = computeTransmissionTimeMicroseconds(nextFrame);
+        double endTime = currentTime + transmissionTime;
 
         eventQueue.add(new SimulationEvent(
                 endTime,
@@ -177,21 +179,18 @@ public class OutputPort {
     }
 
     private void scheduleCreditRecoveryIfNeeded(
-            long currentTime,
+            double currentTime,
             EventQueue eventQueue
     ) {
-        Long nextRecoveryTime = null;
+        Double nextRecoveryTime = null;
 
         if (!classAQueue.isEmpty() && creditA < 0) {
-            long recoveryTime =
-                    currentTime + (long) Math.ceil(-creditA / idleSlopeA);
-
+            double recoveryTime = currentTime + (-creditA / idleSlopeA);
             nextRecoveryTime = recoveryTime;
         }
 
         if (!classBQueue.isEmpty() && creditB < 0) {
-            long recoveryTime =
-                    currentTime + (long) Math.ceil(-creditB / idleSlopeB);
+            double recoveryTime = currentTime + (-creditB / idleSlopeB);
 
             if (nextRecoveryTime == null || recoveryTime < nextRecoveryTime) {
                 nextRecoveryTime = recoveryTime;
@@ -214,8 +213,7 @@ public class OutputPort {
                 EventType.CREDIT_RECOVERY,
                 this
         ));
-
-        if (debugPrints) {
+        if(debugPrints){
             System.out.println(
                     "At time " + currentTime +
                             ": scheduled credit recovery on " + link.id +
@@ -223,15 +221,13 @@ public class OutputPort {
                             ". Credits: " + creditSummary()
             );
         }
+
     }
 
-    private long computeTransmissionTimeMicroseconds(Frame frame) {
+    private double computeTransmissionTimeMicroseconds(Frame frame) {
         int bandwidthMbps = getBandwidthMbps();
 
-        double transmissionTime =
-                (frame.sizeBytes * 8.0) / bandwidthMbps;
-
-        return (long) Math.ceil(transmissionTime);
+        return (frame.sizeBytes * 8.0) / bandwidthMbps;
     }
 
     private int getBandwidthMbps() {
@@ -253,12 +249,12 @@ public class OutputPort {
                 + ", creditB=" + String.format("%.2f", creditB);
     }
 
-    public boolean consumeCreditRecoveryEvent(long eventTime) {
+    public boolean consumeCreditRecoveryEvent(double eventTime) {
         if (pendingCreditRecoveryTime == null) {
             return false;
         }
 
-        if (pendingCreditRecoveryTime != eventTime) {
+        if (Math.abs(pendingCreditRecoveryTime - eventTime) > EPSILON) {
             return false;
         }
 

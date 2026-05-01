@@ -10,13 +10,13 @@ public class Frame {
     public final int instanceId;
     public final int priority;
     public final int sizeBytes;
-    public final long releaseTime;
+    public final double releaseTime;
     public final List<Link> path;
 
     public int nextHopIndex = 0;
-    public long finishTime = -1;
+    public double finishTime = -1.0;
 
-    public Frame(Stream stream, int instanceId, long releaseTime, List<Link> path) {
+    public Frame(Stream stream, int instanceId, double releaseTime, List<Link> path) {
         this.streamId = stream.id;
         this.instanceId = instanceId;
         this.priority = stream.PCP;
