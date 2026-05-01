@@ -24,7 +24,7 @@ public class Simulator {
         JsonParser parser = new JsonParser();
 
         TestCaseData testCase = parser.parseTestCase(
-                "src/main/resources/examples/test_case_hand_2"
+                "src/main/resources/examples/test_case_2"
         );
 
         final StreamsFile streams = testCase.streamsFile;
