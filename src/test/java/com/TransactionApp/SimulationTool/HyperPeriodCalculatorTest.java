@@ -18,7 +18,7 @@ public class HyperPeriodCalculatorTest extends TestCase {
 
         TestCaseData data = parser.parseTestCase(testCaseDir);
 
-        long hyperPeriod = HyperPeriodCalculator.computeHyperPeriod(data.streams);
+        long hyperPeriod = HyperPeriodCalculator.computeHyperPeriod(data.streamsFile);
 
         assertEquals(2000L, hyperPeriod);
     }
