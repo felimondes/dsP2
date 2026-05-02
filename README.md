@@ -27,6 +27,12 @@ TestCaseData testCase = parser.parseTestCase(
                 "src/main/resources/examples/test_case_2"
         );
 ```
+Additionally, the length of the simulation can be set on line 36 in the `SimulationApp.java` file:
+```powershell
+int simulationHyperperiods = 100;
+```
+This meaning that the simulation will run for 100 hyperperiods. You can change this value to increase or decrease the length of the simulation.
+
 to run the simulation tool, run the command:
 ```powershell
 mvn exec:java "-Dexec.mainClass=com.TransactionApp.SimulationTool.Simulator"
